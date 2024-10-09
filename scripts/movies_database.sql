@@ -6,35 +6,25 @@ s.film_title,
 s.release_year ,
 r.worldwide_gross
 FROM specs AS s
-LEFT JOIN revenue as r
+LEFT JOIN revenue AS r
 ON s.movie_id=r.movie_id
 ORDER BY r.worldwide_gross ASC;
 --Answer: Semi-Tought, 1977, 37187139
 
 --2. What year has the highest average imdb rating?
 SELECT
-s.movie_id,
 s.release_year,
-r.imdb_rating
+AVG (r.imdb_rating) as avg_rating
 FROM specs AS S
 LEFT JOIN rating as r
 ON s.movie_id=r.movie_id
-ORDER BY release_year DESC;
---Answer 2019
+GROUP BY s.release_year
+ORDER BY avg_rating DESC;
+--Answer 1991
 
 --3. What is the highest grossing G-rated movie? 
 
 SELECT 
-s.movie_id,
-s.film_title,
-s.mpaa_rating,
-r.worldwide_gross
-FROM specs as s
-LEFT JOIN revenue as r
-ON s.movie_id = r.movie_id
-WHERE s.mpaa_rating = 'G'
-ORDER BY r.worldwide_gross DESC
---Answer: Toy Story 4
 
 --Which company distributed it?
 
@@ -53,13 +43,13 @@ WHERE s.mpaa_rating = 'G'
 --4. Write a query that returns, for each distributor in the distributors table, the distributor name and the number of movies associated with that distributor in the movies 
 table. Your result set should include all of the distributors, whether or not they have any movies in the movies table.
 SELECT 
-	d.distributor_id,
+	DISTINCT d.distributor_id,
 	d.company_name,
-	s.domestic_distributor_id,
-	s.film_title
-FROM distributors as d
-FULL JOIN specs as s
-ON d.distributor_id=s.domestic_distributor_id;
+	COUNT(s.movie_id) AS number_of_movies
+FROM specs as s
+LEFT JOIN distributors as d
+ON d.distributor_id=s.domestic_distributor_id
+GROUP BY d.distributor_id, d.company_name;
 --Answer- Complete
 
 --5. Write a query that returns the five distributors with the highest average movie budget.
@@ -96,4 +86,7 @@ LEFT JOIN rating AS r
 ON s.movie_id = r.movie_id
 GROUP BY s.movie_id, s.film_title, s.length_in_min, r.imdb_rating
 ORDER BY avg_rating DESC;
---Answer- There is a tie for the average of both types
+--Answer- 2 hour or more mmovies had a higher average
+
+
+--CASE WHEN (condition) THEN (return if true) ELSE (return if false) END
